@@ -1,18 +1,22 @@
 import logging
-from aiogram import Bot, Dispatcher, types
-from aiogram.types import ParseMode, ReplyKeyboardMarkup, KeyboardButton
-from aiogram.utils import executor
 import random
+import os
+from aiogram import Bot, Dispatcher, types
+from aiogram.types import ParseMode, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.utils import executor
+from dotenv import load_dotenv
 
-API_TOKEN = '7623017087:AAH4hLpQgMev1UjRiEC6-7S7KqQCmcfVLdo'  # Replace with your actual token
-ADMIN_ID = 6304947099  # Replace with your Telegram ID to receive forwarded messages
+load_dotenv()
+
+API_TOKEN = os.getenv('API_TOKEN')
+ADMIN_ID = int(os.getenv('ADMIN_ID'))
 
 logging.basicConfig(level=logging.INFO)
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
-# Define keyboard buttons
+# Кнопки главного меню
 keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
 keyboard.add(KeyboardButton("📖 Business Vocabulary"))
 keyboard.add(KeyboardButton("📝 Writing Zone"))
@@ -20,7 +24,7 @@ keyboard.add(KeyboardButton("🎙 Speaking Practice"))
 keyboard.add(KeyboardButton("🎯 Daily Quizzes"))
 keyboard.add(KeyboardButton("💼 Interview Trainer"))
 
-# Sample responses for different sections
+# Секции и ответы
 responses = {
     "📖 Business Vocabulary": [
         "Marketing, Finance, HR vocab 💼",
@@ -36,7 +40,8 @@ responses = {
         "Startup terminology 🚀",
         "Management language 👩‍💼",
         "Leadership and strategy vocabulary 💡",
-        "Business culture terms 🌐"
+        "Business culture terms 🌐",
+        "Work ethics and values 🧭"
     ],
     "📝 Writing Zone": [
         "How to write a professional email ✉️",
@@ -56,38 +61,21 @@ responses = {
         "Writing professional social media posts 📱"
     ],
     "🎙 Speaking Practice": [
-        "Let's practice some phrases 🗣",
-        "Answer the question: What's your favorite hobby? 🎤",
-        "Let's talk about business trends! 📈",
-        "How do you introduce yourself in a meeting? 💼",
-        "Explain your company's vision in 30 seconds 📊",
-        "Talk about a time when you had to solve a problem at work 🤔",
-        "Describe the last business event you attended 🗣",
-        "What skills are essential for a successful career? 💪",
-        "Discuss your favorite business book 📚",
-        "Tell me about a challenging project you worked on 📈",
-        "Describe your ideal job 💼",
-        "What motivates you in your career? 🎯",
-        "How do you manage stress at work? 🧘‍♂️",
-        "Talk about your strengths and weaknesses 👨‍💼",
-        "Give a 30-second elevator pitch about yourself 🚀"
-    ],
-    "🎯 Daily Quizzes": [
-        {"question": "What does 'ROI' stand for? 🤔", "answer": "Return on Investment 💰"},
-        {"question": "What is 'B2B'? 📊", "answer": "Business to Business 🤝"},
-        {"question": "What does 'KPI' mean? 📈", "answer": "Key Performance Indicator 📊"},
-        {"question": "What does 'CRM' stand for? 🧑‍💼", "answer": "Customer Relationship Management 💬"},
-        {"question": "What is 'SEO'? 🔍", "answer": "Search Engine Optimization 🌐"},
-        {"question": "What is 'GDP'? 📊", "answer": "Gross Domestic Product 💵"},
-        {"question": "What does 'SaaS' stand for? 💻", "answer": "Software as a Service 🖥"},
-        {"question": "What is 'P&L'? 📑", "answer": "Profit and Loss 📉"},
-        {"question": "What is 'PR' in business? 📢", "answer": "Public Relations 📰"},
-        {"question": "What is 'IPO'? 📈", "answer": "Initial Public Offering 💵"},
-        {"question": "What does 'B2C' mean? 🏬", "answer": "Business to Consumer 🛍"},
-        {"question": "What is 'A/B testing'? ⚙️", "answer": "Comparing two versions of something to see which one performs better 📊"},
-        {"question": "What is 'VC'? 💼", "answer": "Venture Capital 💵"},
-        {"question": "What is 'SWOT'? 📉", "answer": "Strengths, Weaknesses, Opportunities, and Threats 📊"},
-        {"question": "What is 'CSR'? 🌱", "answer": "Corporate Social Responsibility 🌍"}
+        "🎤 Please send a voice message answering: What's your favorite hobby?",
+        "🎤 Voice reply: How do you introduce yourself in a meeting?",
+        "🎤 Talk about a time you solved a problem at work.",
+        "🎤 Describe your ideal job.",
+        "🎤 What motivates you in your career?",
+        "🎤 How do you manage stress at work?",
+        "🎤 Talk about your strengths and weaknesses.",
+        "🎤 What’s a recent business trend you noticed?",
+        "🎤 Give your 30-second elevator pitch.",
+        "🎤 Share your favorite business book.",
+        "🎤 Describe your work style.",
+        "🎤 What’s your dream company?",
+        "🎤 What role do you usually play in a team?",
+        "🎤 How do you handle deadlines?",
+        "🎤 Talk about a challenging business task."
     ],
     "💼 Interview Trainer": [
         "Tell me about yourself 🙋‍♂️",
@@ -97,6 +85,109 @@ responses = {
         "Describe a difficult situation you’ve overcome 🏅",
         "Where do you see yourself in 5 years? 📅",
         "How do you handle stress at work? 🧘‍♂️",
+        "What is your leadership style? 👩‍💼",
+        "Why do you want to work here? 🌟",
+        "What motivates you to work hard? 🔥",
+        "What do you consider your greatest achievement? 🏆",
+        "Describe a time you worked in a team 🤝",
+        "What are your salary expectations? 💵",
+        "Why do you want to change careers? 🔄",
+        "What are your short-term goals? 🥅"
+    ],
+    "🎯 Daily Quizzes": [
+        {"question": "What does 'ROI' stand for? 🤔", "answer": "Return on Investment"},
+        {"question": "What is 'B2B'? 📊", "answer": "Business to Business"},
+        {"question": "What does 'KPI' mean? 📈", "answer": "Key Performance Indicator"},
+        {"question": "What does 'CRM' stand for? 🧑‍💼", "answer": "Customer Relationship Management"},
+        {"question": "What is 'SEO'? 🔍", "answer": "Search Engine Optimization"},
+        {"question": "What is 'GDP'? 📊", "answer": "Gross Domestic Product"},
+        {"question": "What does 'SaaS' stand for? 💻", "answer": "Software as a Service"},
+        {"question": "What is 'P&L'? 📑", "answer": "Profit and Loss"},
+        {"question": "What is 'PR' in business? 📢", "answer": "Public Relations"},
+        {"question": "What is 'IPO'? 📈", "answer": "Initial Public Offering"},
+        {"question": "What does 'B2C' mean? 🏬", "answer": "Business to Consumer"},
+        {"question": "What is 'A/B testing'? ⚙️", "answer": "Comparing two versions to find the better one"},
+        {"question": "What is 'VC'? 💼", "answer": "Venture Capital"},
+        {"question": "What is 'SWOT'? 📉", "answer": "Strengths, Weaknesses, Opportunities, Threats"},
+        {"question": "What is 'CSR'? 🌱", "answer": "Corporate Social Responsibility"},
+        {"question": "Define 'benchmarking' 📊", "answer": "Comparing performance to industry bests"},
+        {"question": "Meaning of 'turnover' 💰", "answer": "Revenue or employee rotation"},
+        {"question": "Define 'stakeholder' 👥", "answer": "Anyone affected by a company’s actions"},
+        {"question": "What is 'net profit'? 💵", "answer": "Revenue minus expenses"},
+        {"question": "What is a 'pitch'? 🗣", "answer": "Presentation to persuade"},
+        {"question": "What is 'synergy'? 🤝", "answer": "Combined effect greater than parts"},
+        {"question": "Define 'scalability' 🚀", "answer": "Ability to grow efficiently"},
+        {"question": "What is 'liquidity'? 💧", "answer": "Ease of converting assets to cash"},
+        {"question": "Meaning of 'merger' 🧩", "answer": "Two companies joining"},
+        {"question": "What is a 'startup'? 🛠", "answer": "New business venture"},
+        {"question": "Define 'cash flow' 💸", "answer": "Movement of money in and out"},
+        {"question": "What is 'branding'? 🔖", "answer": "Creating a unique business image"},
+        {"question": "Meaning of 'freemium'? 🎁", "answer": "Free service with optional upgrades"},
+        {"question": "What is 'outsourcing'? 🏢", "answer": "Delegating tasks externally"},
+        {"question": "What is 'IPO'? 📈", "answer": "Initial Public Offering"}
+    ]
+}
+
+user_section = {}
+
+@dp.message_handler(commands=['start'])
+async def start_cmd(message: types.Message):
+    await message.answer("Welcome to Career EnglishBot! 👋 Choose a section below:", reply_markup=keyboard)
+
+@dp.message_handler(lambda m: m.text in responses)
+async def handle_section(message: types.Message):
+    user_section[message.chat.id] = message.text
+    section = message.text
+
+    if section == "🎯 Daily Quizzes":
+        quiz = random.choice(responses[section])
+        user_section[message.chat.id] = quiz
+        await message.answer(quiz['question'])
+
+    elif section == "🎙 Speaking Practice":
+        prompt = random.choice(responses[section])
+        await message.answer(prompt)
+
+    elif section == "💼 Interview Trainer":
+        question = random.choice(responses[section])
+        user_section[message.chat.id] = question
+        await message.answer(question)
+
+    else:
+        await message.answer("\n".join(responses[section]))
+
+@dp.message_handler(content_types=types.ContentType.VOICE)
+async def handle_voice(message: types.Message):
+    section = user_section.get(message.chat.id)
+    if section == "🎙 Speaking Practice":
+        await bot.forward_message(chat_id=ADMIN_ID, from_chat_id=message.chat.id, message_id=message.message_id)
+
+        markup = InlineKeyboardMarkup()
+        for label in ["✅ Very nice", "🗣 Work on pronunciation", "❌ Wrong grammar", "📘 Improve fluency"]:
+            markup.add(InlineKeyboardButton(label, callback_data=f"reply:{message.chat.id}:{label}"))
+        await bot.send_message(ADMIN_ID, f"Voice from {message.chat.id} in Speaking Practice:", reply_markup=markup)
+
+@dp.message_handler()
+async def handle_response(message: types.Message):
+    section = user_section.get(message.chat.id)
+
+    if section == "🎯 Daily Quizzes":
+        quiz = user_section.get(message.chat.id)
+        if quiz and quiz['answer'].lower() in message.text.lower():
+            await message.answer("✅ Correct!")
+        else:
+            await message.answer(f"❌ Incorrect. Correct answer: {quiz['answer']}")
+
+    elif section == "💼 Interview Trainer":
+        await bot.send_message(ADMIN_ID, f"Interview answer from {message.chat.id}:\nQ: {section}\nA: {message.text}")
+
+@dp.callback_query_handler(lambda c: c.data.startswith("reply:"))
+async def handle_admin_reply(callback_query: types.CallbackQuery):
+    _, user_id, reply = callback_query.data.split(":")
+    await bot.send_message(int(user_id), reply)
+
+if __name__ == '__main__':
+    executor.start_polling(dp, skip_updates=True)at work? 🧘‍♂️",
         "What is your leadership style? 👩‍💼",
         "Why do you want to work here? 🌟",
         "What motivates you to work hard? 🔥",
